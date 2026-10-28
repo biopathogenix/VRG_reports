@@ -1,0 +1,3977 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Validation Report Generator</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================
+           BIOPATHOGENIX THEME
+           Change the brand colors here -- everything else follows.
+        ========================================================== */
+        :root {
+            --brand-navy: #002c56;
+            --brand-navy-2: #0a3d6e;
+            --brand-teal: #3e97ce;
+            --brand-teal-dark: #226a9d;
+            --brand-teal-soft: #e6f2fa;
+            --brand-blue-soft: #edf3f9;
+            --ink: #1c2b3a;
+            --muted: #5b6b7c;
+            --line: #d9e2ea;
+            --bg: #f2f6f9;
+            --card: #ffffff;
+            --ok: #1e8e5a;
+            --danger: #c0392b;
+            --radius: 12px;
+            --shadow: 0 10px 30px rgba(11, 42, 74, 0.10);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(1200px 420px at 85% -10%, rgba(62,151,206,0.12), transparent 60%),
+                var(--bg);
+            color: var(--ink);
+            margin: 0;
+            padding: 0 0 40px;
+            line-height: 1.5;
+        }
+
+        /* ---------- Site header ---------- */
+        .site-header {
+            background: #ffffff;
+            color: var(--brand-navy);
+            padding: 14px 24px;
+            border-bottom: 4px solid var(--brand-teal);
+            box-shadow: 0 2px 12px rgba(0,44,86,0.08);
+        }
+
+        .site-header-inner {
+            max-width: 980px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            width: 40px;
+            height: 40px;
+            flex: none;
+        }
+
+        .brand-name {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .brand-name span { color: #5fe0da; }
+
+        .brand-sub {
+            font-size: 11px;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            color: #a9c1d9;
+            margin-top: 1px;
+        }
+
+        .header-tag {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--brand-navy);
+            background: var(--brand-teal-soft);
+            border: 1px solid #b9d9ee;
+            padding: 6px 12px;
+            border-radius: 999px;
+        }
+        .brand-logo { height: 46px; width: auto; display: block; }
+        @media (max-width: 680px) { .brand-logo { height: 36px; } }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 34px 24px 6px;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 32px;
+            line-height: 1.15;
+            color: var(--brand-navy);
+            letter-spacing: -0.3px;
+        }
+
+        .hero h1::after {
+            content: "";
+            display: block;
+            width: 64px;
+            height: 4px;
+            border-radius: 4px;
+            background: var(--brand-teal);
+            margin-top: 12px;
+        }
+
+        .hero p {
+            margin: 14px 0 0;
+            max-width: 700px;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        /* ---------- Main card ---------- */
+        .container {
+            max-width: 980px;
+            background: var(--card);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--line);
+            margin: 22px auto 0;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 30px 0 14px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+            color: var(--brand-navy);
+        }
+
+        .section-title:first-of-type { margin-top: 0; }
+
+        .section-title .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--brand-teal);
+            color: #fff;
+            font-size: 13px;
+            letter-spacing: 0;
+        }
+
+        .section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--line);
+        }
+
+        /* ---------- Upload tiles ---------- */
+        .upload-section {
+            background: var(--brand-blue-soft);
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            border: 2px dashed #b3c7dc;
+            transition: border-color .15s, background .15s;
+        }
+
+        .upload-section:hover {
+            border-color: var(--brand-teal);
+            background: #edf6fa;
+        }
+
+        .excel-upload {
+            background: var(--brand-teal-soft);
+            border-color: #a9cfe8;
+        }
+
+        .excel-upload:hover {
+            background: #dcecf7;
+            border-color: var(--brand-teal);
+        }
+
+        .upload-section input[type="file"] {
+            background: #fff;
+            width: 100%;
+            padding: 8px;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--brand-navy);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            margin-right: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: var(--brand-teal-dark);
+        }
+
+        /* ---------- Form ---------- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 18px;
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--brand-navy);
+            font-size: 13px;
+        }
+
+        input, textarea {
+            font-family: inherit;
+            color: var(--ink);
+            background: #fff;
+        }
+
+        input[type="text"] {
+            padding: 11px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--brand-teal);
+            box-shadow: 0 0 0 3px rgba(62,151,206,0.22);
+            outline: none;
+        }
+
+        textarea {
+            padding: 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: "JetBrains Mono", Consolas, Monaco, monospace;
+            min-height: 220px;
+            resize: vertical;
+            width: 100%;
+            line-height: 1.45;
+            background: #fbfdfe;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .helper-text {
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: 12.5px;
+            line-height: 1.45;
+        }
+
+        /* ---------- Button ---------- */
+        button {
+            background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-dark) 100%);
+            color: white;
+            border: none;
+            padding: 15px 22px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 22px;
+            box-shadow: 0 8px 18px rgba(34,106,157,0.28);
+            transition: transform .12s, box-shadow .12s, filter .12s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+            box-shadow: 0 12px 24px rgba(34,106,157,0.34);
+        }
+
+        button:disabled {
+            background: #b8c4d0;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* ---------- Status / messages ---------- */
+        .status {
+            margin-top: 10px;
+            font-weight: 600;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .error-box {
+            display: none;
+            margin-top: 18px;
+            padding: 14px 16px;
+            border: 1px solid #e6b0aa;
+            border-left: 5px solid var(--danger);
+            border-radius: 8px;
+            background: #fff5f4;
+            color: #7b241c;
+            white-space: pre-wrap;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 13px;
+        }
+
+        .debug-box {
+            display: none;
+            margin-top: 16px;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-left: 5px solid var(--brand-navy);
+            border-radius: 8px;
+            background: #f6f9fc;
+            white-space: pre-wrap;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 12px;
+            color: var(--ink);
+        }
+
+        /* ---------- Footer ---------- */
+        .site-footer {
+            max-width: 980px;
+            margin: 22px auto 0;
+            padding: 0 24px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 680px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .container { padding: 20px 16px; margin: 16px 12px 0; }
+            .hero { padding: 26px 16px 0; }
+            .hero h1 { font-size: 25px; }
+            .site-header { padding: 14px 16px; }
+            .header-tag { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="site-header-inner">
+        <div class="brand"><img class="brand-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNjEuNTE4IDc2LjQ4NyI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiMzZTk3Y2U7fS5jbHMtMntmaWxsOiMwMDJjNTY7fTwvc3R5bGU+PC9kZWZzPjxnIGlkPSJMYXllcl8yIiBkYXRhLW5hbWU9IkxheWVyIDIiPjxnIGlkPSJMYXllcl8xLTIiIGRhdGEtbmFtZT0iTGF5ZXIgMSI+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNNjguMDk0LDIxLjM2MkEzNS44NDMsMzUuODQzLDAsMCwwLDUyLjAxOSw0LjY5MWMtMS44ODctLjk4Ny0zLjkzNC0xLjYxOS01LjgwNy0yLjYyNy4zNzMtLjY4OS43MzUtMS4zNzMsMS4xLTIuMDY0QzQzLjg4LDIuOTI4LDQwLjksNi45MjMsNDAuNzgxLDExLjYwNSw0MC41NDksMTcuNzg3LDQ0LjIsMjMuMTQ0LDQ1LjQ5NCwyOWMtNC40NjQtMS4yMS04Ljg0LTIuNzcxLTEzLjMtMy45OTJhMS4zMzgsMS4zMzgsMCwwLDAtMS44NDMsMS4yNjVjLS4wMzYsMS4yMjQsMS4zNjgsMS4zMTYsMi4yMjEsMS42ODgsNC42MTMsMS4zNTcsOS4xODUsMi44NDUsMTMuODA3LDQuMTYxYTE4LjQ2NiwxOC40NjYsMCwwLDEsLjEyNyw2LjU4OGMtNC45NS0xLjUxNi05Ljg4MS0zLjEzLTE0Ljg2Ny00LjUxMS0xLjU0Mi0uNS0yLjI5MSwyLjEwOC0uNzQxLDIuNSw0Ljk5NCwxLjcyNCwxMC4xMTQsMy4wNjMsMTUuMTI3LDQuNzMyYTMwLjgyMSwzMC44MjEsMCwwLDEtMi41NTUsNS42NDljLTIuNTMzLS42ODgtNC45ODYtMS42NDEtNy41NDQtMi4yMzItMS4yNTctLjQ4OS0yLjM0MywxLjYtMS4xMywyLjMxNWE1My40MzMsNTMuNDMzLDAsMCwwLDYuOTkyLDIuMjA3Yy0uOSwxLjI4Mi0xLjg4MiwyLjUwOC0yLjg4NywzLjcwNyw1Ljg4MS0zLjIxLDEyLTcuMTcxLDE0Ljg2NS0xMy40OTIsMi4yNTEtNC45LDEuMTY1LTEwLjUzOC0uOTA2LTE1LjI5LTIuMzE1LTUuODQyLTYuMjI3LTExLjE0MS03LjEyNS0xNy40NzhBMzEuNzY0LDMxLjc2NCwwLDAsMSw2MS42NDYsMTkuMDA5LDMxLjI3NiwzMS4yNzYsMCwwLDEsNTAuOTI4LDYzLjgyNCwzMi4yNDgsMzIuMjQ4LDAsMCwxLDM1Ljc4MSw2Ny44YTUxLjg5NCw1MS44OTQsMCwwLDEtMy43MjksNC4xODhBMzUuNjUzLDM1LjY1MywwLDAsMCw3MC4xMTYsNDYuMTgzYTM1Ljg4MSwzNS44ODEsMCwwLDAtMi4wMjItMjQuODIxWiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTIwLjksMy45NzhBMzYuMTk0LDM2LjE5NCwwLDAsMSw0Mi41MjQsMS4zOWEzOS45NjYsMzkuOTY2LDAsMCwwLTIuNjQxLDQuMDg4QTMxLjI4NCwzMS4yODQsMCwwLDAsOC43NDIsNTIuM2EzMS4xMzUsMzEuMTM1LDAsMCwwLDE4LjIsMTQuMTc3LDI1LjUsMjUuNSwwLDAsMCwuOTM3LTQuODU5Yy40NDQtNy4yMTMtMy4yOTMtMTMuNjkxLTUuODQ4LTIwLjE4LTEuOTQ1LTQuNzQzLTMuNDE1LTEwLjM0NS0xLjAyLTE1LjIxLDMuMTU4LTYuMjIxLDkuNjc0LTkuNjMsMTUuNzI3LTEyLjQ4NmEzMy4yODUsMzMuMjg1LDAsMCwwLTUuODgyLDYuMTE4YzMuMzg3LDEuMTYxLDYuODU3LDIuMDM5LDEwLjIzNiwzLjIwOGExLjMxLDEuMzEsMCwwLDEsLjYsMi4xNjhjLS41MjQuNy0xLjQ0Mi4zNzktMi4xMzUuMTg4LTMuMzQ3LTEuMDIyLTYuNy0yLjA1OC0xMC4wNDktMy4wODNhMjMuMiwyMy4yLDAsMCwwLTEuNTYxLDZjNS4yODcsMS42NDYsMTAuNiwzLjIsMTUuODY3LDQuODg3YTEuMzYxLDEuMzYxLDAsMCwxLC41NDIsMi40NWMtLjU4My40NDUtMS4zMjMuMDcyLTEuOTU2LS4wNDctNC44MTItMS40ODktOS42MzgtMi45MjgtMTQuNDM3LTQuNDQ3YTMwLjc2NywzMC43NjcsMCwwLDAsMS4xNzcsNi44MjZsMTMuMzg0LDMuOTE3YTEuNTE1LDEuNTE1LDAsMSwxLS44NTEsMi45MDhMMzAuNTUyLDQxLjU4M2MtLjA0NCwwLS4wODgtLjAxNy0uMTMzLS4wMjEsMS40MjMsNC4wNzEsMy4zNjIsNy45Niw0LjU1LDEyLjExOCwxLjIsMy45NzUsMS40MDksOC41MzYtLjgzMSwxMi4yLTMuMjg4LDUuMzQzLTkuMiw4LjE4OC0xNC43NDQsMTAuNjExYTQxLjk3LDQxLjk3LDAsMCwwLDUuNC01LjkzMUEzNS43NjEsMzUuNzYxLDAsMCwxLDIwLjksMy45NzhaIj48L3BhdGg+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMTAxLjA1MywzMS40NjFjMy43NS0uOCw1LjgyOS0yLjU5Myw1LjgyOS02LjE4NywwLTUuNDM4LTQuNzUtNy0xMy4wMTYtN0g4My4zMTl2MWExLjcxNCwxLjcxNCwwLDAsMSwxLjU5NCwxLjU5NFY0Ny42MzNhMS43MTQsMS43MTQsMCwwLDEtMS41OTQsMS41OTR2MUg5NS4xNzhjNy4zNiwwLDE1LjIxOS0xLjQ4NCwxNS4yMTktOS41NzgsMC01Ljk1My00LjIzNC04LjMxMy05LjM0NC05LjE4OFpNOTEuNzEsMjAuODY4QTEuNzE0LDEuNzE0LDAsMCwxLDkzLjMsMTkuMjc0aC41NjNjNC4xMDksMCw1LjgyOCwxLjg3NSw1LjgyOCw2LDAsNC4xMDktMS43MTksNS43ODEtNS44MjgsNS43ODFIOTMuM2ExLjcxNCwxLjcxNCwwLDAsMS0xLjU5My0xLjU5NFpNOTMuMyw0OS4yMjdhMS43MTQsMS43MTQsMCwwLDEtMS41OTMtMS41OTRWMzMuNjQ5QTEuNzE0LDEuNzE0LDAsMCwxLDkzLjMsMzIuMDU1aDEuODc1YzQuNDg1LDAsOC4wMzIsMi45MjIsOC4wMzIsOC41OTRzLTMuNTQ3LDguNTc4LTguMDMyLDguNTc4Wm0yMy44NzktMjNhMy4yLDMuMiwwLDEsMC0zLjItMy4yLDMuMiwzLjIsMCwwLDAsMy4yLDMuMlptMy41OTQsMy42MjVoLTcuNTk0djFhMS43MTYsMS43MTYsMCwwLDEsMS41OTQsMS42MDlWNTAuMjI3aDcuNTk0di0xYTEuNzE0LDEuNzE0LDAsMCwxLTEuNTk0LTEuNTk0WiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTEzNS4yOTIsMjkuMzA1YTEwLjc1OSwxMC43NTksMCwxLDAsMTAuOTM3LDEwLjc4MSwxMC42NDUsMTAuNjQ1LDAsMCwwLTEwLjkzNy0xMC43ODFabTAsMjAuNTYzYy0yLjUxNiwwLTQuNTQ3LTQuMjY2LTQuNTQ3LTkuNzgyczIuMDMxLTkuODI4LDQuNTQ3LTkuODI4LDQuNTQ3LDQuMzEzLDQuNTQ3LDkuODI4LTIuMDMyLDkuNzgyLTQuNTQ3LDkuNzgyWiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTE0OS4wMTEsMTguMjc0djFhMS43MTQsMS43MTQsMCwwLDEsMS41OTMsMS41OTRWNDcuNjMzYTEuNzE0LDEuNzE0LDAsMCwxLTEuNTkzLDEuNTk0djFIMTU5di0xYTEuNzE0LDEuNzE0LDAsMCwxLTEuNTk0LTEuNTk0VjM5LjA0QTEuNzE0LDEuNzE0LDAsMCwxLDE1OSwzNy40NDZoMi4wNzhjNy4zNDQsMCwxNS4yMTktMS40NjksMTUuMjE5LTkuNTc4cy03Ljg3NS05LjU5NC0xNS4yMTktOS41OTRaTTE1OSwzNi40NDZhMS43MTQsMS43MTQsMCwwLDEtMS41OTQtMS41OTRWMjAuODY4QTEuNzE0LDEuNzE0LDAsMCwxLDE1OSwxOS4yNzRoMi4wNzhjNC40NjksMCw4LjAzMSwyLjkyMiw4LjAzMSw4LjU5NHMtMy41NjIsOC41NzgtOC4wMzEsOC41NzhaIj48L3BhdGg+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMTk3LjIxOCw0MC4wMDhjMC02LjQ2OC0yLjgyOS0xMC43LTkuODYtMTAuN2E1OS42NjQsNTkuNjY0LDAsMCwwLTcuNDY5LjU0N3Y3LjIzNGgxLjg3NWMwLTMuMDMxLDEuMjgyLTYuODI4LDUuNTk0LTYuODI4LDIuMDMxLDAsMy40NjkuOTUzLDMuNzUsMywuOTIyLDYuNS0xMy4zNzUsMy45MDctMTMuMzc1LDExLjY1NywwLDQuMzEyLDMuMzQ0LDUuODc1LDYuNSw1Ljg3NWE4LjY3OCw4LjY3OCwwLDAsMCw3LTMuODQ0djMuMjgxaDcuNTc4di0xYTEuNzEzLDEuNzEzLDAsMCwxLTEuNTkzLTEuNTk0Wm0tMTAuMjY2LDguMzQ0Yy0xLjg3NSwwLTIuODc1LTEuMzEyLTIuODc1LTMuNDM3LDAtNC4xMSw2LjQzNy02LjA2Myw3LjE1Ni04LjU0Ny4wMzEsMS43NjUsMCwzLjUxNSwwLDMuNjR2NC41Yy0uNDA2LDEuODEzLTIuNDA2LDMuODQ0LTQuMjgxLDMuODQ0WiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTIwNy4yMzMsMzIuNDYxYTEuNzE2LDEuNzE2LDAsMCwxLDEuNTk0LTEuNjA5SDIxMi43di0xaC01LjQ2OVYyMi4yNzRoLTcuNTk0djFhMS43MTQsMS43MTQsMCwwLDEsMS41OTQsMS41OTR2NC45ODRoLTEuNTk0djFhMS43MTYsMS43MTYsMCwwLDEsMS41OTQsMS42MDlWNDQuOTE1YzAsNC4zMTIsMy4zNiw1Ljg3NSw2LjUxNiw1Ljg3NWE2LjYxOSw2LjYxOSwwLDAsMCw0Ljk1My0yVjQ3LjUwOGE0LjA2Myw0LjA2MywwLDAsMS0yLjIzNC44NDRjLTIuMDQ3LDAtMy4yMzUtMS4xNTYtMy4yMzUtMy40MzdaIj48L3BhdGg+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjM0LjkxNywzNS4xNjVjMC00LjMxMy0zLjM2LTUuODYtNi41MTYtNS44NmE4LjgyNSw4LjgyNSwwLDAsMC02LjUsMy4xNTZWMTguMjc0aC03LjU5NHYxYTEuNzE0LDEuNzE0LDAsMCwxLDEuNTk0LDEuNTk0VjUwLjIyN0gyMjMuNXYtMWExLjcxNCwxLjcxNCwwLDAsMS0xLjU5NC0xLjU5NFYzNC4zNjhhNC45MSw0LjkxLDAsMCwxLDMuOC0yLjYyNWMyLjAzMSwwLDMuMjM0LDEuMTU2LDMuMjM0LDMuNDIyVjUwLjIyN2g3LjU3OXYtMWExLjcxNCwxLjcxNCwwLDAsMS0xLjU5NC0xLjU5NFoiPjwvcGF0aD48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0yNDkuNDQ0LDI5LjMwNWExMC43NTksMTAuNzU5LDAsMSwwLDEwLjkzOCwxMC43ODEsMTAuNjQ0LDEwLjY0NCwwLDAsMC0xMC45MzgtMTAuNzgxWm0wLDIwLjU2M2MtMi41MTYsMC00LjU0Ny00LjI2Ni00LjU0Ny05Ljc4MnMyLjAzMS05LjgyOCw0LjU0Ny05LjgyOCw0LjU0Nyw0LjMxMyw0LjU0Nyw5LjgyOC0yLjAzMSw5Ljc4Mi00LjU0Nyw5Ljc4MloiPjwvcGF0aD48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0yODMuNjE2LDUzLjAyNGE3LjkyNyw3LjkyNywwLDAsMC04LjMxMy04LjA2M2MtMy40NjgsMC01LjY3MSwyLjk1NC03Ljk4NCwyLjk1NC0xLjk1MywwLTIuMzU5LTMuNjQxLDEuNjcyLTUuMDc5YTExLjQ1NywxMS40NTcsMCwwLDAsMy45NTMuNjg4YzUuMTU2LDAsOC44NzUtMy4wNzgsOC44NzUtNy4xMDlhNi4zLDYuMywwLDAsMC0xLjItMy42ODh2LS4yNjZhMS43MTYsMS43MTYsMCwwLDEsMS41OTQtMS42MDl2LTFoLTUuNjcyYTExLjI3OSwxMS4yNzksMCwwLDAtMy41OTQtLjU0N2MtNS4xNDEsMC04Ljg1OSwzLjExLTguODU5LDcuMTFhNi43LDYuNywwLDAsMCwzLjU5Myw1LjgyOGMtMi4yLDEtNC43MTgsMi40NjgtNC43MTgsNS43NSwwLDMuNDM3LDMuMjM0LDMuOTA2LDQuMzU5LDMuOTA2LDIuOTUzLDAsNC40MzgtMi4zNDQsNy45ODQtMi4zNDQsMi4yODIsMCwzLjM2LDEuODc1LDMuNDM4LDQuMTEuMDc4LDMuNDM3LTIuMiw3LjIxOC02LjMxMyw3LjIxOC00Ljk1MywwLTUuNS00LjMxMi00LjQyMS02LjY1NmwtNS4xNTctMi43MTlhOC4zNSw4LjM1LDAsMCwwLS42ODcsMy40NjljLjA0NywzLjY3MiwyLjU2Miw3LjIzNCwxMC4yNjUsNy4yMzQsNy43MTksMCwxMS4yNjYtNC40NjgsMTEuMTg4LTkuMTg3Wk0yNzIuOTQ0LDMwLjI1OGMyLjA3OCwwLDMuNzY2LDIuNTE2LDMuNzY2LDYuMTU3LDAsMy42NzEtMS42ODgsNi4xODctMy43NjYsNi4xODctMi4wNjIsMC0zLjc1LTIuNTE2LTMuNzUtNi4xODcsMC0zLjY0MSwxLjY4OC02LjE1NywzLjc1LTYuMTU3WiI+PC9wYXRoPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTMwMC42MTYsNDIuOTE1Yy44LDMuMjM0LTEuMiw3LjMxMi00LjQzOCw2LjkwNi0yLjItLjM5MS0zLjUxNS0yLjA2My00LjEwOS00Ljk1My0uNzE5LTUuNTQ3LDEzLjk2OS0uNjcyLDEzLjk2OS04LjkzOCwwLTQuMzU5LTQuNDY5LTYuNjI1LTkuMDE2LTYuNjI1LTcuMTU2LDAtMTEuNzgxLDQuMzEzLTExLjc4MSwxMC43MzVhMTAuNjE5LDEwLjYxOSwwLDAsMCwxMC45MzcsMTAuNzVjNS43NSwwLDEwLjM5MS0yLjg3NSwxMC4zOTEtNy44MjlhNy4wODcsNy4wODcsMCwwLDAtLjI4MS0yLjA3OFptLTMuNjQxLTEyLjY1N2MyLjM2LDAsMy41NjMsMi4wNzgsMy41NjMsNC4zMTMsMCw0LjQ2OS03LjQzOCw1LjU0Ny04LjgyOCw3LjgyOC0uMDQ3LS43MTktLjA3OC0xLjUxNi0uMDc4LTIuMzU5LDAtNS45MDcsMS45NTMtOS43ODIsNS4zNDMtOS43ODJabS02LjUsNi4yNjZ2MFoiPjwvcGF0aD48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0zMjkuMTU5LDM1LjE2NWMwLTQuMzEzLTMuMzU5LTUuODYtNi41MTYtNS44NmE4LjgyNSw4LjgyNSwwLDAsMC02LjUsMy4xNTZWMjkuODUySDMwOC41NXYxYTEuNzE2LDEuNzE2LDAsMCwxLDEuNTkzLDEuNjA5VjUwLjIyN2g3LjU5NHYtMWExLjcxNCwxLjcxNCwwLDAsMS0xLjU5NC0xLjU5NFYzNC4zNjhhNC45MSw0LjkxLDAsMCwxLDMuOC0yLjYyNWMyLjAzMSwwLDMuMjM1LDEuMTU2LDMuMjM1LDMuNDIyVjUwLjIyN2g3LjU3OHYtMWExLjcxNCwxLjcxNCwwLDAsMS0xLjU5NC0xLjU5NFoiPjwvcGF0aD48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0zMzYuMzQ2LDI2LjIyN2EzLjIsMy4yLDAsMSwwLTMuMi0zLjIsMy4yLDMuMiwwLDAsMCwzLjIsMy4yWm0zLjU5NCwzLjYyNWgtNy41OTR2MWExLjcxNiwxLjcxNiwwLDAsMSwxLjU5NCwxLjYwOVY1MC4yMjdoNy41OTR2LTFhMS43MTQsMS43MTQsMCwwLDEtMS41OTQtMS41OTRaIj48L3BhdGg+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMzU0LjgxNSwzOC4yNDNsMy42NDEtNS44NzVjLjQzNy0uNjcyLDEuMTg3LTEuNTk0LDEuOTg0LTEuNTk0di0xaC0yLjQyMmwtNC4xNTYsNi43MTktMy42NDEtNi42NDFoLTcuMTA5djFjLjgsMCwxLjIuODkxLDEuNTk0LDEuNjA5bDQuNTE1LDguNjI1LTQuMTA5LDYuNjI1Yy0uNDM3LjY3Mi0xLjIsMS41OTQtMiwxLjU5NHYxaDIuNDM4bDQuNTkzLTcuNDIyLDMuODc1LDcuMzQ0aDcuNXYtMWMtLjgsMC0xLjIzNC0uOTIyLTEuNTkzLTEuNTk0WiI+PC9wYXRoPjwvZz48L2c+PC9zdmc+" alt="BioPathogenix"></div>
+        <div class="header-tag">Validation Tools</div>
+    </div>
+</header>
+
+<div class="hero">
+    <h1>Validation Report Generator</h1>
+    <p>
+        Upload the Word validation template and Excel validation report.
+        The app extracts the validation summary tables and generates
+        a completed Word document.
+    </p>
+</div>
+
+<div class="container">
+
+
+
+    <div class="section-title"><span class="num">1</span>Word Template</div>
+
+    <div class="upload-section">
+
+        <label for="templateFile">
+            Select Word Template (.docx):
+        </label>
+
+        <input
+            type="file"
+            id="templateFile"
+            accept=".docx"
+            onchange="loadTemplate(event)"
+        >
+
+        <div
+            id="fileStatus"
+            class="status"
+        >
+            No Word template loaded yet.
+        </div>
+
+    </div>
+
+
+    <div class="section-title"><span class="num">2</span>Excel Data Report</div>
+
+    <div class="upload-section excel-upload">
+
+        <label for="excelFile">
+            Select Excel Data Report (.xlsx):
+        </label>
+
+        <input
+            type="file"
+            id="excelFile"
+            accept=".xlsx"
+            onchange="loadExcel(event)"
+        >
+
+        <div
+            id="excelStatus"
+            class="status"
+        >
+            No Excel file loaded yet.
+        </div>
+
+    </div>
+
+
+    <div class="section-title"><span class="num">3</span>Report Information</div>
+
+    <div class="form-grid">
+
+        <div class="form-group">
+            <label for="COMPANY_NAME">
+                Company Name
+            </label>
+
+            <input
+                type="text"
+                id="COMPANY_NAME"
+                value="CliniCare Lab"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="LAB_LOCATION">
+                Laboratory Location
+            </label>
+
+            <input
+                type="text"
+                id="LAB_LOCATION"
+                value="Burr Ridge, IL"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="ASSAY_NAME">
+                Assay Name
+            </label>
+
+            <input
+                type="text"
+                id="ASSAY_NAME"
+                value="UTI Panel"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="SPECIMEN_DEVICE">
+                Specimen Collection Device
+            </label>
+
+            <input
+                type="text"
+                id="SPECIMEN_DEVICE"
+                value="Amies and Urine"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="INSTRUMENT_SERIAL">
+                Instrument Serial Number
+            </label>
+
+            <input
+                type="text"
+                id="INSTRUMENT_SERIAL"
+                value="QS7-96-1042"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="SOFTWARE_VERSION">
+                Software Version
+            </label>
+
+            <input
+                type="text"
+                id="SOFTWARE_VERSION"
+                value="v2.3 Design and Analysis"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="PREPARED_BY">
+                Prepared by
+            </label>
+
+            <input
+                type="text"
+                id="PREPARED_BY"
+                value="Norma Drew"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="LAB_DIRECTOR">
+                Laboratory Director
+            </label>
+
+            <input
+                type="text"
+                id="LAB_DIRECTOR"
+                value="Dr. Robert Vance"
+            >
+        </div>
+
+    </div>
+
+
+    <div class="section-title"><span class="num">4</span>Appendix A</div>
+
+    <div class="form-grid">
+        <div class="form-group full-width">
+            <label for="APPENDIX_A_TARGETS_TEXT">
+                Appendix A - Target / Dye / Vial Information
+            </label>
+            <div class="helper-text">
+                Enter the Target, Dye and Set/Vial for every assay target. The app will compare your target names against the uploaded Excel run data; it will not fill in or replace your entries.
+            </div>
+            <textarea id="APPENDIX_A_TARGETS_TEXT">| Targets | Dyes | Set |
+
+</textarea>
+            <div id="appendixAStatus" class="status" aria-live="polite">Enter Appendix A information to validate against Excel.</div>
+
+        </div>
+    </div>
+
+
+    <div class="section-title"><span class="num">5</span>Appendix B</div>
+
+    <div class="form-grid">
+        <div class="form-group full-width">
+            <label for="APPENDIX_B_SAMPLES_TEXT">
+                Appendix B - Accuracy Sample Description
+            </label>
+            <div class="helper-text">
+                Provide at least one sample row. Sample name, specimen type, and description are all required.
+
+            </div>
+            <textarea id="APPENDIX_B_SAMPLES_TEXT">| Sample name | Specimen type | Description |
+</textarea>
+            <div id="appendixBStatus" class="status" aria-live="polite">Enter Appendix B sample information.</div>
+
+        </div>
+    </div>
+
+
+    <button
+        id="generateBtn"
+        onclick="generateDocument()"
+        disabled
+    >
+        Generate & Download Word Document
+    </button>
+
+
+    <div
+        id="errorBox"
+        class="error-box"
+    ></div>
+
+
+    <div
+        id="debugBox"
+        class="debug-box"
+    ></div>
+
+</div>
+
+<div class="site-footer">BioPathogenix LLC &middot; Validation Report Generator</div>
+
+
+<script>
+
+/* ============================================================
+   GLOBAL VARIABLES
+============================================================ */
+
+let loadedFileBinary = null;
+let excelDataObj = null;
+
+
+/* ============================================================
+   LIBRARIES
+============================================================ */
+
+const LIBRARIES = {
+
+    pizzip: [
+        "https://unpkg.com/pizzip@3.2.0/dist/pizzip.js",
+        "https://cdn.jsdelivr.net/npm/pizzip@3.2.0/dist/pizzip.js"
+    ],
+
+    docxtemplater: [
+        "https://unpkg.com/docxtemplater@3.70.0/build/docxtemplater.js",
+        "https://cdn.jsdelivr.net/npm/docxtemplater@3.70.0/build/docxtemplater.js"
+    ],
+
+    xlsx: [
+        "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",
+        "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js",
+        "https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"
+    ]
+
+};
+
+
+/* ============================================================
+   LOAD SCRIPT
+============================================================ */
+
+function loadScriptWithFallback(
+    urls,
+    globalCheck,
+    label
+) {
+
+    return new Promise((resolve, reject) => {
+
+        if (globalCheck()) {
+            resolve();
+            return;
+        }
+
+        let index = 0;
+
+
+        const tryNext = () => {
+
+            if (index >= urls.length) {
+
+                reject(
+                    new Error(
+                        label +
+                        " could not be loaded. Check your internet connection."
+                    )
+                );
+
+                return;
+            }
+
+
+            const src =
+                urls[index++];
+
+
+            const script =
+                document.createElement("script");
+
+
+            script.src = src;
+            script.async = true;
+
+
+            script.onload = () => {
+
+                if (globalCheck()) {
+                    resolve();
+                }
+
+                else {
+                    script.remove();
+                    tryNext();
+                }
+
+            };
+
+
+            script.onerror = () => {
+
+                script.remove();
+                tryNext();
+
+            };
+
+
+            document.head.appendChild(
+                script
+            );
+
+        };
+
+
+        tryNext();
+
+    });
+
+}
+
+
+/* ============================================================
+   ENSURE LIBRARIES
+============================================================ */
+
+async function ensureLibraries() {
+
+    await loadScriptWithFallback(
+
+        LIBRARIES.pizzip,
+
+        () =>
+            typeof window.PizZip === "function",
+
+        "PizZip"
+    );
+
+
+    await loadScriptWithFallback(
+
+        LIBRARIES.docxtemplater,
+
+        () =>
+            typeof window.docxtemplater === "function" ||
+            typeof window.Docxtemplater === "function",
+
+        "Docxtemplater"
+    );
+
+
+    await loadScriptWithFallback(
+
+        LIBRARIES.xlsx,
+
+        () =>
+            typeof window.XLSX !== "undefined",
+
+        "SheetJS XLSX"
+    );
+
+}
+
+
+/* ============================================================
+   LOAD WORD TEMPLATE
+============================================================ */
+
+function loadTemplate(event) {
+
+    const file =
+        event.target.files[0];
+
+
+    if (!file) {
+        return;
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(e) {
+
+            loadedFileBinary =
+                e.target.result;
+
+
+            const status =
+                document.getElementById(
+                    "fileStatus"
+                );
+
+
+            status.innerHTML =
+                "Loaded Word Template: <strong>" +
+                file.name +
+                "</strong>";
+
+
+            status.style.color =
+                "#27ae60";
+
+
+            checkReadyState();
+
+        };
+
+
+    reader.onerror =
+        function() {
+
+            showError(
+                "Unable to read Word template."
+            );
+
+        };
+
+
+    reader.readAsArrayBuffer(
+        file
+    );
+
+}
+
+
+/* ============================================================
+   LOAD EXCEL FILE
+============================================================ */
+
+function loadExcel(event) {
+
+    const file =
+        event.target.files[0];
+
+
+    if (!file) {
+        return;
+    }
+
+
+    ensureLibraries()
+
+    .then(() => {
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(e) {
+
+                try {
+
+                    const data =
+                        new Uint8Array(
+                            e.target.result
+                        );
+
+
+                    excelDataObj =
+                        XLSX.read(
+                            data,
+                            {
+                                type: "array",
+                                cellDates: true
+                            }
+                        );
+
+
+                    const status =
+                        document.getElementById(
+                            "excelStatus"
+                        );
+
+
+                    status.innerHTML =
+                        "Loaded Excel Report: <strong>" +
+                        file.name +
+                        "</strong>";
+
+
+                    status.style.color =
+                        "#27ae60";
+
+
+                    console.log(
+                        "Workbook Sheets:",
+                        excelDataObj.SheetNames
+                    );
+
+
+                    // Appendix A is user-provided; validate entries without auto-filling.
+                    checkReadyState();
+
+                }
+
+                catch (error) {
+
+                    showError(
+                        "Error reading Excel file:\n" +
+                        error.message
+                    );
+
+                }
+
+            };
+
+
+        reader.readAsArrayBuffer(
+            file
+        );
+
+    })
+
+    .catch(error => {
+
+        showError(
+            error.message
+        );
+
+    });
+
+}
+
+
+/* ============================================================
+   READY STATE
+============================================================ */
+
+function checkReadyState() {
+
+    const button =
+        document.getElementById(
+            "generateBtn"
+        );
+
+
+    button.disabled =
+        !(loadedFileBinary && excelDataObj && validateAppendices(false));
+
+}
+
+
+/* ============================================================
+   EXCEL HELPERS
+============================================================ */
+
+function sheetToRows(sheet) {
+
+    return XLSX.utils.sheet_to_json(
+        sheet,
+        {
+            header: 1,
+            raw: false,
+            defval: ""
+        }
+    );
+
+}
+
+
+function cleanCell(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+
+    return String(value).trim();
+
+}
+
+
+function isRepHeader(value, number) {
+
+    const text =
+        cleanCell(value)
+        .replace(/\s+/g, "")
+        .toLowerCase();
+
+
+    return (
+        text === "rep" + number ||
+        text === "replicate" + number
+    );
+
+}
+
+
+/* ============================================================
+   APPENDIX A TARGETS
+   Accepts Markdown, tab-separated, or comma-separated input.
+   Output keys match the Word template row loop:
+   Target, Dyes, Set
+============================================================ */
+
+function parseAppendixATargets() {
+
+    const raw =
+        document.getElementById(
+            "APPENDIX_A_TARGETS_TEXT"
+        ).value || "";
+
+
+    const lines = raw
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+
+    const rows = [];
+
+
+    for (const line of lines) {
+
+        let cells;
+
+
+        if (line.includes("|")) {
+
+            cells = line
+                .replace(/^\|/, "")
+                .replace(/\|$/, "")
+                .split("|")
+                .map(cell => cleanCell(cell));
+
+        }
+
+        else if (line.includes("\t")) {
+
+            cells = line
+                .split("\t")
+                .map(cell => cleanCell(cell));
+
+        }
+
+        else {
+
+            cells = line
+                .split(",")
+                .map(cell => cleanCell(cell));
+
+        }
+
+
+        if (cells.length < 3) {
+            continue;
+        }
+
+
+        const c0 = cells[0].toLowerCase();
+        const c1 = cells[1].toLowerCase();
+        const c2 = cells[2].toLowerCase();
+
+
+        // Skip header row.
+        if (
+            (c0 === "targets" || c0 === "target" || c0 === "target name") &&
+            (c1 === "dyes" || c1 === "dye") &&
+            (c2 === "set" || c2 === "vial")
+        ) {
+            continue;
+        }
+
+
+        // Skip Markdown separator row such as | --- | --- | --- |
+        if (
+            cells.slice(0, 3).every(cell =>
+                /^:?-{3,}:?$/.test(cell.replace(/\s+/g, ""))
+            )
+        ) {
+            continue;
+        }
+
+
+        const target = cells[0];
+        const dyes = cells[1];
+        const set = cells.slice(2).join(", ");
+
+
+        if (!target && !dyes && !set) {
+            continue;
+        }
+
+
+        rows.push({
+            Target: target,
+            Dyes: dyes,
+            Set: set
+        });
+
+    }
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   APPENDIX B SAMPLES
+   Accepts Markdown, tab-separated, or comma-separated input.
+   Output keys match the Word template row loop:
+   Sample name, Specimen type, Description
+============================================================ */
+
+function parseAppendixBSamples() {
+
+    const raw =
+        document.getElementById(
+            "APPENDIX_B_SAMPLES_TEXT"
+        ).value || "";
+
+
+    const lines = raw
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+
+    const rows = [];
+
+
+    for (const line of lines) {
+
+        let cells;
+
+
+        if (line.includes("|")) {
+
+            cells = line
+                .replace(/^\|/, "")
+                .replace(/\|$/, "")
+                .split("|")
+                .map(cell => cleanCell(cell));
+
+        }
+
+        else if (line.includes("\t")) {
+
+            cells = line
+                .split("\t")
+                .map(cell => cleanCell(cell));
+
+        }
+
+        else {
+
+            // Split only the first two commas so commas inside Description are preserved.
+            const firstComma = line.indexOf(",");
+            const secondComma = firstComma >= 0
+                ? line.indexOf(",", firstComma + 1)
+                : -1;
+
+            if (firstComma >= 0 && secondComma >= 0) {
+                cells = [
+                    cleanCell(line.slice(0, firstComma)),
+                    cleanCell(line.slice(firstComma + 1, secondComma)),
+                    cleanCell(line.slice(secondComma + 1))
+                ];
+            }
+            else {
+                cells = line
+                    .split(",")
+                    .map(cell => cleanCell(cell));
+            }
+
+        }
+
+
+        if (cells.length < 3) {
+            continue;
+        }
+
+
+        const c0 = cells[0].toLowerCase();
+        const c1 = cells[1].toLowerCase();
+        const c2 = cells[2].toLowerCase();
+
+
+        // Skip header row.
+        if (
+            (c0 === "sample name" || c0 === "sample") &&
+            (c1 === "specimen type" || c1 === "specimen") &&
+            c2 === "description"
+        ) {
+            continue;
+        }
+
+
+        // Skip Markdown separator row such as | --- | --- | --- |
+        if (
+            cells.slice(0, 3).every(cell =>
+                /^:?-{3,}:?$/.test(cell.replace(/\s+/g, ""))
+            )
+        ) {
+            continue;
+        }
+
+
+        const sampleName = cells[0];
+        const specimenType = cells[1];
+        const description = cells.slice(2).join(", ");
+
+
+        if (!sampleName && !specimenType && !description) {
+            continue;
+        }
+
+
+        rows.push({
+            "Sample name": sampleName,
+            "Specimen type": specimenType,
+            Description: description
+        });
+
+    }
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   APPENDIX VALIDATION -- USER ENTRIES vs EXCEL RUN TARGETS
+============================================================ */
+function normalizeTargetName(value) {
+    return cleanCell(value).replace(/\s+/g, " ").toLowerCase();
+}
+
+function getExcelRunTargets(workbook) {
+    // Use the run-data target-name column, NOT free-text labels or output tables.
+    const candidates = ["Correlation Study", "Sensitivity Study", "Intra-Study", "Inter-Study", "Linearity Study", "Interference Study"];
+    for (const name of candidates) {
+        const sheet = workbook.Sheets[name];
+        if (!sheet) continue;
+        const data = sheetToRows(sheet);
+        const heading = data.findIndex(row => normalizeTargetName(row[0]) === "target name");
+        if (heading < 0) continue;
+        let targets = [];
+        let started = false;
+        for (let r = heading + 1; r < data.length; r++) {
+            const target = cleanCell((data[r] || [])[0]);
+            if (normalizeTargetName(target) === "target name") continue;
+            if (!target) {
+                if (started) break;
+                continue;
+            }
+            started = true;
+            if (!targets.some(x => normalizeTargetName(x) === normalizeTargetName(target))) targets.push(target);
+        }
+        if (targets.length) return targets;
+    }
+    return [];
+}
+
+function validateAppendices(throwOnError = false) {
+    const errors = [];
+    const a = parseAppendixATargets();
+    const b = parseAppendixBSamples();
+    const expected = excelDataObj ? getExcelRunTargets(excelDataObj) : [];
+    const expectedMap = new Map(expected.map(x => [normalizeTargetName(x), x]));
+    const actualMap = new Map();
+    const aErrors = [];
+    const bErrors = [];
+    if (!a.length) aErrors.push("Enter at least one Target / Dye / Set row.");
+    a.forEach((row, idx) => {
+        if (!row.Target || !row.Dyes || !row.Set) aErrors.push("Appendix A row " + (idx + 1) + ": Target, Dye, and Set/Vial are all required.");
+        if (row.Target) {
+            const key = normalizeTargetName(row.Target);
+            if (actualMap.has(key)) aErrors.push("Duplicate target: " + row.Target);
+            actualMap.set(key, row.Target);
+        }
+    });
+    if (excelDataObj && !expected.length) aErrors.push("No run-data target names found in Excel. Cannot verify Appendix A.");
+    if (expected.length) {
+        const missing = expected.filter(x => !actualMap.has(normalizeTargetName(x)));
+        const extra = [...actualMap.values()].filter(x => !expectedMap.has(normalizeTargetName(x)));
+        if (missing.length) aErrors.push("Missing from Appendix A: " + missing.join(", "));
+        if (extra.length) aErrors.push("Not found in Excel run data: " + extra.join(", "));
+    }
+    if (!b.length) bErrors.push("Enter at least one Appendix B sample row.");
+    b.forEach((row, idx) => {
+        if (!row["Sample name"] || !row["Specimen type"] || !row.Description)
+            bErrors.push("Appendix B row " + (idx + 1) + ": Sample name, specimen type, and description are required.");
+    });
+    const aStatus = document.getElementById("appendixAStatus");
+    const bStatus = document.getElementById("appendixBStatus");
+    aStatus.textContent = aErrors.length ? "Appendix A: " + aErrors.join(" | ") : (excelDataObj ? "Appendix A: All " + expected.length + " user-entered targets match the Excel run data." : "Appendix A: Upload Excel to check target names.");
+    aStatus.style.color = aErrors.length ? "#c0392b" : "#21864b";
+    bStatus.textContent = bErrors.length ? "Appendix B: " + bErrors.join(" | ") : "Appendix B: " + b.length + " complete sample row(s).";
+    bStatus.style.color = bErrors.length ? "#c0392b" : "#21864b";
+    errors.push(...aErrors, ...bErrors);
+    if (throwOnError && errors.length) throw new Error("Appendix validation failed:\n- " + errors.join("\n- "));
+    return errors.length === 0 && !!excelDataObj && expected.length > 0;
+}
+
+document.getElementById("APPENDIX_A_TARGETS_TEXT").addEventListener("input", checkReadyState);
+document.getElementById("APPENDIX_B_SAMPLES_TEXT").addEventListener("input", checkReadyState);
+
+/* ============================================================
+   TABLE 1
+   ANALYTICAL ACCURACY
+============================================================ */
+
+function extractAccuracyTable(workbook) {
+
+    const sheet =
+        workbook.Sheets[
+            "Correlation Study"
+        ];
+
+
+    if (!sheet) {
+
+        console.warn(
+            "Correlation Study sheet not found."
+        );
+
+        return [];
+    }
+
+
+    const data =
+        sheetToRows(sheet);
+
+
+    /*
+       Current workbook summary is:
+
+       AN Target Name
+       AO Count of positive
+       AP Count of negative
+       AQ Concordant
+       AR Agreement
+    */
+
+    let startRow = -1;
+    let startCol = -1;
+
+
+    for (
+        let r = 0;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        for (
+            let c = 0;
+            c < row.length;
+            c++
+        ) {
+
+            if (
+
+                cleanCell(row[c]) ===
+                    "Target Name"
+
+                &&
+
+                cleanCell(row[c + 1])
+                .toLowerCase()
+                .includes("positive")
+
+                &&
+
+                cleanCell(row[c + 2])
+                .toLowerCase()
+                .includes("negative")
+
+            ) {
+
+                startRow = r;
+                startCol = c;
+
+                break;
+            }
+
+        }
+
+
+        if (
+            startRow !== -1
+        ) {
+            break;
+        }
+
+    }
+
+
+    if (
+        startRow === -1
+    ) {
+
+        console.warn(
+            "Table 1 Accuracy summary not found."
+        );
+
+        return [];
+    }
+
+
+    let rows = [];
+    let blankRows = 0;
+
+
+    for (
+        let r = startRow + 1;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        const target =
+            cleanCell(
+                row[startCol]
+            );
+
+
+        if (!target) {
+
+            blankRows++;
+
+
+            if (
+                blankRows >= 3
+            ) {
+                break;
+            }
+
+
+            continue;
+        }
+
+
+        blankRows = 0;
+
+
+        rows.push({
+
+            Target:
+                target,
+
+            "Count of positive":
+                cleanCell(
+                    row[startCol + 1]
+                ),
+
+            "Count of negative":
+                cleanCell(
+                    row[startCol + 2]
+                ),
+
+            Concordant:
+                cleanCell(
+                    row[startCol + 3]
+                ),
+
+            agreement:
+                cleanCell(
+                    row[startCol + 4]
+                )
+
+        });
+
+    }
+
+
+    console.log(
+        "TABLE 1:",
+        rows
+    );
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   TABLE 3
+   INTERFERENCE
+============================================================ */
+
+function extractInterferenceTable(workbook) {
+
+    const sheet =
+        workbook.Sheets[
+            "Interference Study"
+        ];
+
+
+    if (!sheet) {
+
+        console.warn(
+            "Interference Study sheet not found."
+        );
+
+        return [];
+    }
+
+
+    const data =
+        sheetToRows(sheet);
+
+
+    let startRow = -1;
+    let startCol = -1;
+
+
+    /*
+       Current workbook:
+
+       Q Target Name
+       R Count of concordant
+       S Agreement%
+    */
+
+    for (
+        let r = 0;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        for (
+            let c = 0;
+            c < row.length;
+            c++
+        ) {
+
+            if (
+
+                cleanCell(row[c]) ===
+                    "Target Name"
+
+                &&
+
+                cleanCell(row[c + 1])
+                .toLowerCase()
+                .includes("concordant")
+
+                &&
+
+                cleanCell(row[c + 2])
+                .toLowerCase()
+                .includes("agreement")
+
+            ) {
+
+                startRow = r;
+                startCol = c;
+
+                break;
+            }
+
+        }
+
+
+        if (
+            startRow !== -1
+        ) {
+            break;
+        }
+
+    }
+
+
+    if (
+        startRow === -1
+    ) {
+
+        console.warn(
+            "Table 3 Interference summary not found."
+        );
+
+        return [];
+    }
+
+
+    let rows = [];
+    let blankRows = 0;
+
+
+    for (
+        let r = startRow + 1;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        const target =
+            cleanCell(
+                row[startCol]
+            );
+
+
+        if (!target) {
+
+            blankRows++;
+
+
+            if (
+                blankRows >= 3
+            ) {
+                break;
+            }
+
+
+            continue;
+        }
+
+
+        blankRows = 0;
+
+
+        rows.push({
+
+            Target:
+                target,
+
+            "Count of concordant":
+                cleanCell(
+                    row[startCol + 1]
+                ),
+
+            "Agreement%":
+                cleanCell(
+                    row[startCol + 2]
+                )
+
+        });
+
+    }
+
+
+    console.log(
+        "TABLE 3:",
+        rows
+    );
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   SAMPLE STABILITY SUMMARY SOURCE
+
+   Current workbook layout:
+
+   AA = Target Name
+   AB = Day 1 Count
+   AC = Day 1 Agreement
+   AD = Day 3 Count
+   AE = Day 3 Agreement
+   AF = Day 5 Count
+   AG = Day 5 Agreement
+   AH = Day 7 Count
+   AI = Day 7 Agreement
+============================================================ */
+
+function getStabilitySourceRows(workbook) {
+
+    const sheet =
+        workbook.Sheets[
+            "Stability Study"
+        ];
+
+
+    if (!sheet) {
+
+        console.warn(
+            "Stability Study sheet not found."
+        );
+
+        return [];
+    }
+
+
+    const data =
+        sheetToRows(sheet);
+
+
+    let startRow = -1;
+    let targetCol = -1;
+
+
+    for (
+        let r = 0;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        for (
+            let c = 0;
+            c < row.length;
+            c++
+        ) {
+
+            if (
+
+                cleanCell(row[c]) ===
+                    "Target Name"
+
+                &&
+
+                cleanCell(row[c + 1])
+                .toLowerCase()
+                .includes("concordant")
+
+                &&
+
+                cleanCell(row[c + 2])
+                .toLowerCase()
+                .includes("agreement")
+
+                &&
+
+                cleanCell(row[c + 7])
+                .toLowerCase()
+                .includes("concordant")
+
+            ) {
+
+                startRow = r;
+                targetCol = c;
+
+                break;
+            }
+
+        }
+
+
+        if (
+            startRow !== -1
+        ) {
+            break;
+        }
+
+    }
+
+
+    if (
+        startRow === -1
+    ) {
+
+        console.warn(
+            "Sample stability summary not found."
+        );
+
+        return [];
+    }
+
+
+    let rows = [];
+    let blankRows = 0;
+
+
+    for (
+        let r = startRow + 1;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        const target =
+            cleanCell(
+                row[targetCol]
+            );
+
+
+        if (!target) {
+
+            blankRows++;
+
+
+            if (
+                blankRows >= 3
+            ) {
+                break;
+            }
+
+
+            continue;
+        }
+
+
+        blankRows = 0;
+
+
+        rows.push({
+
+            Target:
+                target,
+
+            day1Count:
+                cleanCell(
+                    row[targetCol + 1]
+                ),
+
+            day1Agreement:
+                cleanCell(
+                    row[targetCol + 2]
+                ),
+
+            day3Count:
+                cleanCell(
+                    row[targetCol + 3]
+                ),
+
+            day3Agreement:
+                cleanCell(
+                    row[targetCol + 4]
+                ),
+
+            day5Count:
+                cleanCell(
+                    row[targetCol + 5]
+                ),
+
+            day5Agreement:
+                cleanCell(
+                    row[targetCol + 6]
+                ),
+
+            day7Count:
+                cleanCell(
+                    row[targetCol + 7]
+                ),
+
+            day7Agreement:
+                cleanCell(
+                    row[targetCol + 8]
+                )
+
+        });
+
+    }
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   TABLE 4A
+   SAMPLE STABILITY DAY 1 vs DAY 3
+============================================================ */
+
+function extractStability3DayTable(workbook) {
+
+    return getStabilitySourceRows(
+        workbook
+    ).map(row => ({
+
+        Target:
+            row.Target,
+
+        "Count of concordant_day1":
+            row.day1Count,
+
+        "Agreement%_day1":
+            row.day1Agreement,
+
+        "Count of concordant_day3":
+            row.day3Count,
+
+        "Agreement%_day3":
+            row.day3Agreement
+
+    }));
+
+}
+
+
+/* ============================================================
+   TABLE 4B
+   SAMPLE STABILITY DAY 1 vs DAY 7
+============================================================ */
+
+function extractStability7DayTable(workbook) {
+
+    return getStabilitySourceRows(
+        workbook
+    ).map(row => ({
+
+        Target:
+            row.Target,
+
+        "Count of concordant_day1":
+            row.day1Count,
+
+        "Agreement%_day1":
+            row.day1Agreement,
+
+        "Count of concordant_day7":
+            row.day7Count,
+
+        "Agreement%_day7":
+            row.day7Agreement
+
+    }));
+
+}
+
+
+/* ============================================================
+   TABLE 5
+   ELUTION PLATE STABILITY
+   DAY 1 vs DAY 3
+
+   Current workbook:
+
+   AK Target Name
+   AL Day 1 Count
+   AM Day 1 Agreement
+   AN Day 3 Count
+   AO Day 3 Agreement
+============================================================ */
+
+function extractElutionStabilityTable(workbook) {
+
+    const sheet =
+        workbook.Sheets[
+            "Stability Study"
+        ];
+
+
+    if (!sheet) {
+        return [];
+    }
+
+
+    const data =
+        sheetToRows(sheet);
+
+
+    let startRow = -1;
+    let startCol = -1;
+
+
+    /*
+       Identify the five-column Target Name block
+       associated with Elution Plate Day 1 / Day 3.
+    */
+
+    for (
+        let r = 0;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        for (
+            let c = 0;
+            c < row.length;
+            c++
+        ) {
+
+            if (
+
+                cleanCell(row[c]) ===
+                    "Target Name"
+
+                &&
+
+                cleanCell(row[c + 1])
+                .toLowerCase()
+                .includes("concordant")
+
+                &&
+
+                cleanCell(row[c + 2])
+                .toLowerCase()
+                .includes("agreement")
+
+                &&
+
+                cleanCell(row[c + 3])
+                .toLowerCase()
+                .includes("concordant")
+
+                &&
+
+                cleanCell(row[c + 4])
+                .toLowerCase()
+                .includes("agreement")
+
+            ) {
+
+                /*
+                   Main stability block has more fields.
+                   Elution block ends after +4.
+                   Prefer block at/after column AK.
+                */
+
+                if (c >= 36) {
+
+                    startRow = r;
+                    startCol = c;
+
+                    break;
+                }
+
+            }
+
+        }
+
+
+        if (
+            startRow !== -1
+        ) {
+            break;
+        }
+
+    }
+
+
+    if (
+        startRow === -1
+    ) {
+
+        console.warn(
+            "Table 5 Elution summary not found."
+        );
+
+        return [];
+    }
+
+
+    let rows = [];
+    let blankRows = 0;
+
+
+    for (
+        let r = startRow + 1;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        const target =
+            cleanCell(
+                row[startCol]
+            );
+
+
+        if (!target) {
+
+            blankRows++;
+
+
+            if (
+                blankRows >= 3
+            ) {
+                break;
+            }
+
+
+            continue;
+        }
+
+
+        blankRows = 0;
+
+
+        rows.push({
+
+            Target:
+                target,
+
+            "Count of concordant_day1":
+                cleanCell(
+                    row[startCol + 1]
+                ),
+
+            "Agreement%_day1":
+                cleanCell(
+                    row[startCol + 2]
+                ),
+
+            "Count of concordant_day3":
+                cleanCell(
+                    row[startCol + 3]
+                ),
+
+            "Agreement%_day3":
+                cleanCell(
+                    row[startCol + 4]
+                )
+
+        });
+
+    }
+
+
+    console.log(
+        "TABLE 5:",
+        rows
+    );
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   INTRA STUDY SHEET
+============================================================ */
+
+function getIntraStudySheet(workbook) {
+
+    return (
+        workbook.Sheets["Intra-Study"] ||
+        workbook.Sheets["Intra Study"] ||
+        workbook.Sheets["Intra Study "]
+    );
+
+}
+
+
+/* ============================================================
+   TABLE 6
+   INTRA-ASSAY POSITIVE
+============================================================ */
+
+function extractIntraPositiveTable(workbook) {
+
+    const sheet =
+        getIntraStudySheet(workbook);
+
+
+    if (!sheet) {
+        return [];
+    }
+
+
+    const data =
+        sheetToRows(sheet);
+
+
+    let startRow = -1;
+    let startCol = -1;
+
+
+    for (
+        let r = 0;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        for (
+            let c = 0;
+            c < row.length;
+            c++
+        ) {
+
+            if (
+
+                cleanCell(row[c]) ===
+                    "Target Name"
+
+                &&
+
+                isRepHeader(
+                    row[c + 1],
+                    1
+                )
+
+                &&
+
+                isRepHeader(
+                    row[c + 2],
+                    2
+                )
+
+                &&
+
+                isRepHeader(
+                    row[c + 3],
+                    3
+                )
+
+                &&
+
+                isRepHeader(
+                    row[c + 4],
+                    4
+                )
+
+                &&
+
+                cleanCell(
+                    row[c + 5]
+                ).toLowerCase() ===
+                    "mean"
+
+            ) {
+
+                startRow = r;
+                startCol = c;
+
+                break;
+            }
+
+        }
+
+
+        if (
+            startRow !== -1
+        ) {
+            break;
+        }
+
+    }
+
+
+    if (
+        startRow === -1
+    ) {
+
+        console.warn(
+            "Table 6 Intra Positive not found."
+        );
+
+        return [];
+    }
+
+
+    let rows = [];
+    let blankRows = 0;
+
+
+    for (
+        let r = startRow + 1;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        const target =
+            cleanCell(
+                row[startCol]
+            );
+
+
+        if (!target) {
+
+            blankRows++;
+
+
+            if (
+                blankRows >= 3
+            ) {
+                break;
+            }
+
+
+            continue;
+        }
+
+
+        blankRows = 0;
+
+
+        rows.push({
+
+            Target:
+                target,
+
+            Rep1:
+                cleanCell(
+                    row[startCol + 1]
+                ),
+
+            Rep2:
+                cleanCell(
+                    row[startCol + 2]
+                ),
+
+            Rep3:
+                cleanCell(
+                    row[startCol + 3]
+                ),
+
+            Rep4:
+                cleanCell(
+                    row[startCol + 4]
+                ),
+
+            Mean:
+                cleanCell(
+                    row[startCol + 5]
+                ),
+
+            SD:
+                cleanCell(
+                    row[startCol + 6]
+                ),
+
+            CV:
+                cleanCell(
+                    row[startCol + 7]
+                )
+
+        });
+
+    }
+
+
+    console.log(
+        "TABLE 6:",
+        rows
+    );
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   TABLE 7
+   INTRA-ASSAY NEGATIVE
+============================================================ */
+
+function extractIntraNegativeTable(workbook) {
+
+    const sheet =
+        getIntraStudySheet(workbook);
+
+
+    if (!sheet) {
+        return [];
+    }
+
+
+    const data =
+        sheetToRows(sheet);
+
+
+    let startRow = -1;
+    let startCol = -1;
+
+
+    for (
+        let r = 0;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        for (
+            let c = 0;
+            c < row.length;
+            c++
+        ) {
+
+            if (
+
+                cleanCell(row[c]) ===
+                    "Target Name"
+
+                &&
+
+                isRepHeader(
+                    row[c + 1],
+                    1
+                )
+
+                &&
+
+                isRepHeader(
+                    row[c + 2],
+                    2
+                )
+
+                &&
+
+                isRepHeader(
+                    row[c + 3],
+                    3
+                )
+
+                &&
+
+                isRepHeader(
+                    row[c + 4],
+                    4
+                )
+
+                &&
+
+                cleanCell(
+                    row[c + 5]
+                ).toLowerCase() !==
+                    "mean"
+
+            ) {
+
+                startRow = r;
+                startCol = c;
+
+                break;
+            }
+
+        }
+
+
+        if (
+            startRow !== -1
+        ) {
+            break;
+        }
+
+    }
+
+
+    if (
+        startRow === -1
+    ) {
+
+        console.warn(
+            "Table 7 Intra Negative not found."
+        );
+
+        return [];
+    }
+
+
+    let rows = [];
+    let blankRows = 0;
+
+
+    for (
+        let r = startRow + 1;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        const target =
+            cleanCell(
+                row[startCol]
+            );
+
+
+        if (!target) {
+
+            blankRows++;
+
+
+            if (
+                blankRows >= 3
+            ) {
+                break;
+            }
+
+
+            continue;
+        }
+
+
+        blankRows = 0;
+
+
+        rows.push({
+
+            Target:
+                target,
+
+            Rep1:
+                cleanCell(
+                    row[startCol + 1]
+                ),
+
+            Rep2:
+                cleanCell(
+                    row[startCol + 2]
+                ),
+
+            Rep3:
+                cleanCell(
+                    row[startCol + 3]
+                ),
+
+            Rep4:
+                cleanCell(
+                    row[startCol + 4]
+                )
+
+        });
+
+    }
+
+
+    console.log(
+        "TABLE 7:",
+        rows
+    );
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   INTER STUDY SHEET
+============================================================ */
+
+function getInterStudySheet(workbook) {
+
+    return (
+        workbook.Sheets["Inter-Study"] ||
+        workbook.Sheets["Inter Study"] ||
+        workbook.Sheets["Inter Study "]
+    );
+
+}
+
+
+/* ============================================================
+   TABLE 8
+   INTER-ASSAY POSITIVE
+
+   Supports:
+   Target
+   Rep1
+   Rep2
+   Rep3
+   Rep4
+   Mean
+   SD
+   CV
+
+   If a workbook currently has only Rep1/Rep2,
+   Rep3 and Rep4 remain blank.
+============================================================ */
+
+function extractInterPositiveTable(workbook) {
+
+    const sheet =
+        getInterStudySheet(workbook);
+
+
+    if (!sheet) {
+
+        console.warn(
+            "Inter-Study sheet not found."
+        );
+
+        return [];
+    }
+
+
+    const data =
+        sheetToRows(sheet);
+
+
+    let startRow = -1;
+    let startCol = -1;
+
+
+    for (
+        let r = 0;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        for (
+            let c = 0;
+            c < row.length;
+            c++
+        ) {
+
+            if (
+
+                cleanCell(row[c]) ===
+                    "Target Name"
+
+                &&
+
+                isRepHeader(
+                    row[c + 1],
+                    1
+                )
+
+                &&
+
+                isRepHeader(
+                    row[c + 2],
+                    2
+                )
+
+            ) {
+
+                /*
+                   Positive table is the block
+                   containing Mean / SD / %CV.
+                */
+
+                const nearbyHeaders =
+                    row.slice(
+                        c + 3,
+                        c + 9
+                    )
+                    .map(cleanCell)
+                    .map(
+                        x => x.toLowerCase()
+                    );
+
+
+                if (
+                    nearbyHeaders.includes(
+                        "mean"
+                    )
+                ) {
+
+                    startRow = r;
+                    startCol = c;
+
+                    break;
+                }
+
+            }
+
+        }
+
+
+        if (
+            startRow !== -1
+        ) {
+            break;
+        }
+
+    }
+
+
+    if (
+        startRow === -1
+    ) {
+
+        console.warn(
+            "Table 8 Inter Positive not found."
+        );
+
+        return [];
+    }
+
+
+    const headerRow =
+        data[startRow] || [];
+
+
+    /*
+       Find actual header positions dynamically.
+       This supports either:
+
+       Target, Rep1, Rep2, Mean, SD, %CV
+
+       OR
+
+       Target, Rep1, Rep2, Rep3, Rep4,
+       Mean, SD, %CV
+    */
+
+    let rep1Col = -1;
+    let rep2Col = -1;
+    let rep3Col = -1;
+    let rep4Col = -1;
+    let meanCol = -1;
+    let sdCol = -1;
+    let cvCol = -1;
+
+
+    for (
+        let c = startCol + 1;
+        c < headerRow.length;
+        c++
+    ) {
+
+        const value =
+            cleanCell(
+                headerRow[c]
+            );
+
+
+        const normalized =
+            value
+            .replace(/\s+/g, "")
+            .toLowerCase();
+
+
+        if (
+            normalized === "rep1"
+        ) {
+            rep1Col = c;
+        }
+
+
+        else if (
+            normalized === "rep2"
+        ) {
+            rep2Col = c;
+        }
+
+
+        else if (
+            normalized === "rep3"
+        ) {
+            rep3Col = c;
+        }
+
+
+        else if (
+            normalized === "rep4"
+        ) {
+            rep4Col = c;
+        }
+
+
+        else if (
+            normalized === "mean"
+        ) {
+            meanCol = c;
+        }
+
+
+        else if (
+            normalized === "sd"
+        ) {
+            sdCol = c;
+        }
+
+
+        else if (
+            normalized === "%cv" ||
+            normalized === "cv"
+        ) {
+
+            cvCol = c;
+
+            break;
+        }
+
+    }
+
+
+    let rows = [];
+    let blankRows = 0;
+
+
+    for (
+        let r = startRow + 1;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        const target =
+            cleanCell(
+                row[startCol]
+            );
+
+
+        if (!target) {
+
+            blankRows++;
+
+
+            if (
+                blankRows >= 3
+            ) {
+                break;
+            }
+
+
+            continue;
+        }
+
+
+        blankRows = 0;
+
+
+        rows.push({
+
+            Target:
+                target,
+
+            Rep1:
+                rep1Col >= 0
+                    ? cleanCell(row[rep1Col])
+                    : "",
+
+            Rep2:
+                rep2Col >= 0
+                    ? cleanCell(row[rep2Col])
+                    : "",
+
+            Rep3:
+                rep3Col >= 0
+                    ? cleanCell(row[rep3Col])
+                    : "",
+
+            Rep4:
+                rep4Col >= 0
+                    ? cleanCell(row[rep4Col])
+                    : "",
+
+            Mean:
+                meanCol >= 0
+                    ? cleanCell(row[meanCol])
+                    : "",
+
+            SD:
+                sdCol >= 0
+                    ? cleanCell(row[sdCol])
+                    : "",
+
+            CV:
+                cvCol >= 0
+                    ? cleanCell(row[cvCol])
+                    : ""
+
+        });
+
+    }
+
+
+    console.log(
+        "TABLE 8:",
+        rows
+    );
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   TABLE 9
+   INTER-ASSAY NEGATIVE
+
+   Supports 4 replicate fields.
+============================================================ */
+
+function extractInterNegativeTable(workbook) {
+
+    const sheet =
+        getInterStudySheet(workbook);
+
+
+    if (!sheet) {
+
+        console.warn(
+            "Inter-Study sheet not found."
+        );
+
+        return [];
+    }
+
+
+    const data =
+        sheetToRows(sheet);
+
+
+    let startRow = -1;
+    let startCol = -1;
+
+
+    for (
+        let r = 0;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        for (
+            let c = 0;
+            c < row.length;
+            c++
+        ) {
+
+            if (
+
+                cleanCell(row[c]) ===
+                    "Target Name"
+
+                &&
+
+                isRepHeader(
+                    row[c + 1],
+                    1
+                )
+
+                &&
+
+                isRepHeader(
+                    row[c + 2],
+                    2
+                )
+
+            ) {
+
+                /*
+                   Negative table does not have
+                   Mean / SD / CV immediately after
+                   the replicate fields.
+                */
+
+                const nearbyHeaders =
+                    row.slice(
+                        c + 3,
+                        c + 9
+                    )
+                    .map(cleanCell)
+                    .map(
+                        x => x.toLowerCase()
+                    );
+
+
+                if (
+                    !nearbyHeaders.includes(
+                        "mean"
+                    )
+                ) {
+
+                    startRow = r;
+                    startCol = c;
+
+                    break;
+                }
+
+            }
+
+        }
+
+
+        if (
+            startRow !== -1
+        ) {
+            break;
+        }
+
+    }
+
+
+    if (
+        startRow === -1
+    ) {
+
+        console.warn(
+            "Table 9 Inter Negative not found."
+        );
+
+        return [];
+    }
+
+
+    const headerRow =
+        data[startRow] || [];
+
+
+    let rep1Col = -1;
+    let rep2Col = -1;
+    let rep3Col = -1;
+    let rep4Col = -1;
+
+
+    for (
+        let c = startCol + 1;
+        c < headerRow.length;
+        c++
+    ) {
+
+        const normalized =
+            cleanCell(
+                headerRow[c]
+            )
+            .replace(/\s+/g, "")
+            .toLowerCase();
+
+
+        if (
+            normalized === "rep1"
+        ) {
+            rep1Col = c;
+        }
+
+
+        else if (
+            normalized === "rep2"
+        ) {
+            rep2Col = c;
+        }
+
+
+        else if (
+            normalized === "rep3"
+        ) {
+            rep3Col = c;
+        }
+
+
+        else if (
+            normalized === "rep4"
+        ) {
+            rep4Col = c;
+        }
+
+
+        /*
+           Stop if another Target block begins.
+        */
+
+        else if (
+            normalized === "targetname"
+        ) {
+            break;
+        }
+
+    }
+
+
+    let rows = [];
+    let blankRows = 0;
+
+
+    for (
+        let r = startRow + 1;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        const target =
+            cleanCell(
+                row[startCol]
+            );
+
+
+        if (!target) {
+
+            blankRows++;
+
+
+            if (
+                blankRows >= 3
+            ) {
+                break;
+            }
+
+
+            continue;
+        }
+
+
+        blankRows = 0;
+
+
+        rows.push({
+
+            Target:
+                target,
+
+            Rep1:
+                rep1Col >= 0
+                    ? cleanCell(row[rep1Col])
+                    : "",
+
+            Rep2:
+                rep2Col >= 0
+                    ? cleanCell(row[rep2Col])
+                    : "",
+
+            Rep3:
+                rep3Col >= 0
+                    ? cleanCell(row[rep3Col])
+                    : "",
+
+            Rep4:
+                rep4Col >= 0
+                    ? cleanCell(row[rep4Col])
+                    : ""
+
+        });
+
+    }
+
+
+    console.log(
+        "TABLE 9:",
+        rows
+    );
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   TABLE 10
+   LIMIT OF DETECTION
+
+   Current workbook summary:
+
+   AU Target Name
+   AV Count of concordant
+   AW Agreement%
+   AX Mean
+   AY SD
+   AZ %CV
+============================================================ */
+
+function extractLODTable(workbook) {
+
+    const sheet =
+        workbook.Sheets[
+            "Sensitivity Study"
+        ];
+
+
+    if (!sheet) {
+
+        console.warn(
+            "Sensitivity Study sheet not found."
+        );
+
+        return [];
+    }
+
+
+    const data =
+        sheetToRows(sheet);
+
+
+    let startRow = -1;
+    let startCol = -1;
+
+
+    for (
+        let r = 0;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        for (
+            let c = 0;
+            c < row.length;
+            c++
+        ) {
+
+            if (
+
+                cleanCell(row[c]) ===
+                    "Target Name"
+
+                &&
+
+                cleanCell(row[c + 1])
+                .toLowerCase()
+                .includes("concordant")
+
+                &&
+
+                cleanCell(row[c + 2])
+                .toLowerCase()
+                .includes("agreement")
+
+                &&
+
+                cleanCell(row[c + 3])
+                .toLowerCase() ===
+                    "mean"
+
+                &&
+
+                cleanCell(row[c + 4])
+                .toLowerCase() ===
+                    "sd"
+
+            ) {
+
+                startRow = r;
+                startCol = c;
+
+                break;
+            }
+
+        }
+
+
+        if (
+            startRow !== -1
+        ) {
+            break;
+        }
+
+    }
+
+
+    if (
+        startRow === -1
+    ) {
+
+        console.warn(
+            "Table 10 LOD summary not found."
+        );
+
+        return [];
+    }
+
+
+    let rows = [];
+    let blankRows = 0;
+
+
+    for (
+        let r = startRow + 1;
+        r < data.length;
+        r++
+    ) {
+
+        const row =
+            data[r] || [];
+
+
+        const target =
+            cleanCell(
+                row[startCol]
+            );
+
+
+        if (!target) {
+
+            blankRows++;
+
+
+            if (
+                blankRows >= 3
+            ) {
+                break;
+            }
+
+
+            continue;
+        }
+
+
+        blankRows = 0;
+
+
+        rows.push({
+
+            Target:
+                target,
+
+            "Count of concordant":
+                cleanCell(
+                    row[startCol + 1]
+                ),
+
+            "Agreement%":
+                cleanCell(
+                    row[startCol + 2]
+                ),
+
+            Mean:
+                cleanCell(
+                    row[startCol + 3]
+                ),
+
+            SD:
+                cleanCell(
+                    row[startCol + 4]
+                ),
+
+            CV:
+                cleanCell(
+                    row[startCol + 5]
+                )
+
+        });
+
+    }
+
+
+    console.log(
+        "TABLE 10:",
+        rows
+    );
+
+
+    return rows;
+
+}
+
+
+/* ============================================================
+   DEBUG
+============================================================ */
+
+function showDebug(
+    table1,
+    table3,
+    table4a,
+    table4b,
+    table5,
+    table6,
+    table7,
+    table8,
+    table9,
+    table10
+) {
+
+    const box =
+        document.getElementById(
+            "debugBox"
+        );
+
+
+    box.style.display =
+        "block";
+
+
+    box.textContent =
+
+        "EXTRACTION RESULTS\n" +
+        "=================================\n\n" +
+
+        "Table 1 rows: " +
+        table1.length + "\n" +
+
+        "Table 3 rows: " +
+        table3.length + "\n" +
+
+        "Table 4a rows: " +
+        table4a.length + "\n" +
+
+        "Table 4b rows: " +
+        table4b.length + "\n" +
+
+        "Table 5 rows: " +
+        table5.length + "\n" +
+
+        "Table 6 rows: " +
+        table6.length + "\n" +
+
+        "Table 7 rows: " +
+        table7.length + "\n" +
+
+        "Table 8 rows: " +
+        table8.length + "\n" +
+
+        "Table 9 rows: " +
+        table9.length + "\n" +
+
+        "Table 10 rows: " +
+        table10.length + "\n\n" +
+
+        "TABLE 8 FIRST ROW\n" +
+        JSON.stringify(
+            table8[0] || {},
+            null,
+            2
+        ) +
+
+        "\n\nTABLE 9 FIRST ROW\n" +
+        JSON.stringify(
+            table9[0] || {},
+            null,
+            2
+        ) +
+
+        "\n\nTABLE 10 FIRST ROW\n" +
+        JSON.stringify(
+            table10[0] || {},
+            null,
+            2
+        );
+
+}
+
+
+/* ============================================================
+   ERROR DISPLAY
+============================================================ */
+
+function showError(message) {
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+
+    box.textContent =
+        message;
+
+
+    box.style.display =
+        "block";
+
+}
+
+
+/* ============================================================
+   GENERATE WORD DOCUMENT
+============================================================ */
+
+async function generateDocument() {
+
+    if (!loadedFileBinary) {
+
+        showError(
+            "Please upload the Word template."
+        );
+
+        return;
+    }
+
+
+    if (!excelDataObj) {
+
+        showError(
+            "Please upload the Excel validation report."
+        );
+
+        return;
+    }
+
+
+    const button =
+        document.getElementById(
+            "generateBtn"
+        );
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "Generating...";
+
+
+    document.getElementById(
+        "errorBox"
+    ).style.display =
+        "none";
+
+
+    try {
+
+        await ensureLibraries();
+
+
+        /* ====================================================
+           EXTRACT TABLES
+        ==================================================== */
+
+        // Do not export an incomplete report or one with mismatched targets.
+        validateAppendices(true);
+
+        const appendixATargets =
+            parseAppendixATargets();
+
+
+        const appendixBSamples =
+            parseAppendixBSamples();
+
+        // A plain {{APPENDIX_A_TARGETS}} placeholder must not stringify
+        // its array as "[object Object],[object Object],...". Preserve the
+        // array for Docxtemplater repeating-row loops, but provide a readable
+        // representation when the array is used as a scalar placeholder.
+        Object.defineProperty(appendixATargets, "toString", {
+            configurable: true,
+            value: () => appendixATargets
+                .map(row => [row.Target, row.Dyes, row.Set]
+                    .filter(Boolean).join(" | "))
+                .join("\n")
+        });
+
+        Object.defineProperty(appendixBSamples, "toString", {
+            configurable: true,
+            value: () => appendixBSamples
+                .map(row => [row["Sample name"], row["Specimen type"], row.Description]
+                    .filter(Boolean).join(" | "))
+                .join("\n")
+        });
+
+
+        const table1 =
+            extractAccuracyTable(
+                excelDataObj
+            );
+
+
+        const table3 =
+            extractInterferenceTable(
+                excelDataObj
+            );
+
+
+        const table4a =
+            extractStability3DayTable(
+                excelDataObj
+            );
+
+
+        const table4b =
+            extractStability7DayTable(
+                excelDataObj
+            );
+
+
+        const table5 =
+            extractElutionStabilityTable(
+                excelDataObj
+            );
+
+
+        const table6 =
+            extractIntraPositiveTable(
+                excelDataObj
+            );
+
+
+        const table7 =
+            extractIntraNegativeTable(
+                excelDataObj
+            );
+
+
+        const table8 =
+            extractInterPositiveTable(
+                excelDataObj
+            );
+
+
+        const table9 =
+            extractInterNegativeTable(
+                excelDataObj
+            );
+
+
+        const table10 =
+            extractLODTable(
+                excelDataObj
+            );
+
+
+        showDebug(
+            table1,
+            table3,
+            table4a,
+            table4b,
+            table5,
+            table6,
+            table7,
+            table8,
+            table9,
+            table10
+        );
+
+
+        /* ====================================================
+           DOCXTEMPLATER
+        ==================================================== */
+
+        const PizZipCtor =
+            window.PizZip;
+
+
+        const DocxtemplaterCtor =
+            window.docxtemplater ||
+            window.Docxtemplater;
+
+
+        const zip =
+            new PizZipCtor(
+                loadedFileBinary
+            );
+
+
+        const doc =
+            new DocxtemplaterCtor(
+                zip,
+                {
+
+                    paragraphLoop:
+                        true,
+
+                    linebreaks:
+                        true,
+
+                    delimiters: {
+
+                        start:
+                            "{{",
+
+                        end:
+                            "}}"
+
+                    },
+
+                    nullGetter:
+                        function() {
+
+                            return "";
+
+                        }
+
+                }
+            );
+
+
+        /* ====================================================
+           TEMPLATE DATA
+        ==================================================== */
+
+        const templateData = {
+
+            COMPANY_NAME:
+                document.getElementById(
+                    "COMPANY_NAME"
+                ).value,
+
+
+            LAB_LOCATION:
+                document.getElementById(
+                    "LAB_LOCATION"
+                ).value,
+
+
+            ASSAY_NAME:
+                document.getElementById(
+                    "ASSAY_NAME"
+                ).value,
+
+
+            SPECIMEN_DEVICE:
+                document.getElementById(
+                    "SPECIMEN_DEVICE"
+                ).value,
+
+
+            INSTRUMENT_SERIAL:
+                document.getElementById(
+                    "INSTRUMENT_SERIAL"
+                ).value,
+
+
+            SOFTWARE_VERSION:
+                document.getElementById(
+                    "SOFTWARE_VERSION"
+                ).value,
+
+
+            PREPARED_BY:
+                document.getElementById(
+                    "PREPARED_BY"
+                ).value,
+
+
+            LAB_DIRECTOR:
+                document.getElementById(
+                    "LAB_DIRECTOR"
+                ).value,
+
+
+            /* APPENDIX A */
+
+            APPENDIX_A_TARGETS:
+                appendixATargets,
+
+
+            /* APPENDIX B */
+
+            APPENDIX_B_SAMPLES:
+                appendixBSamples,
+
+
+            /* TABLES */
+
+            TABLE_1_ACCURACY:
+                table1,
+
+
+            TABLE_3_INTERFERENCE:
+                table3,
+
+
+            TABLE_4A_STABILITY_3DAY:
+                table4a,
+
+
+            TABLE_4B_STABILITY_7DAY:
+                table4b,
+
+
+            TABLE_5_ELUTION_STABILITY:
+                table5,
+
+
+            TABLE_6_INTRA_POS:
+                table6,
+
+
+            TABLE_7_INTRA_NEG:
+                table7,
+
+
+            TABLE_8_INTER_POS:
+                table8,
+
+
+            TABLE_9_INTER_NEG:
+                table9,
+
+
+            TABLE_10_LOD:
+                table10
+
+        };
+
+
+        console.log(
+            "Template Data:",
+            templateData
+        );
+
+
+        /* ====================================================
+           RENDER DOCUMENT
+        ==================================================== */
+
+        doc.render(
+            templateData
+        );
+
+
+        /* ====================================================
+           CREATE DOCX
+        ==================================================== */
+
+        const out =
+            doc.getZip().generate(
+                {
+
+                    type:
+                        "blob",
+
+                    mimeType:
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+                }
+            );
+
+
+        /* ====================================================
+           DOWNLOAD
+        ==================================================== */
+
+        const url =
+            URL.createObjectURL(
+                out
+            );
+
+
+        const a =
+            document.createElement(
+                "a"
+            );
+
+
+        a.href =
+            url;
+
+
+        a.download =
+            "CliniCare_Validation_Report_Completed.docx";
+
+
+        document.body.appendChild(
+            a
+        );
+
+
+        a.click();
+
+
+        a.remove();
+
+
+        setTimeout(
+            () =>
+                URL.revokeObjectURL(
+                    url
+                ),
+            1000
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        let detailedMsg =
+
+            "Error generating document:\n\n" +
+
+            (
+                error.message ||
+                error
+            );
+
+
+        if (
+            error.properties &&
+            error.properties.errors
+        ) {
+
+            detailedMsg +=
+                "\n\nDetailed Template Errors:\n";
+
+
+            error.properties.errors
+            .forEach(
+                (err, index) => {
+
+                    detailedMsg +=
+
+                        "\n" +
+
+                        (index + 1) +
+
+                        ". " +
+
+                        (
+                            err.properties?.explanation ||
+                            err.message ||
+                            "Unknown template error"
+                        );
+
+                }
+            );
+
+        }
+
+
+        showError(
+            detailedMsg
+        );
+
+    }
+
+    finally {
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "Generate & Download Word Document";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
